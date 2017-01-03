@@ -1,0 +1,27 @@
+{
+  "name": "survey-site",
+  "version": "1.0.0",
+  "description": "I can do surveys",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --use_strict index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Acciaccatura/survey-site.git"
+  },
+  "keywords": [
+    "node.js"
+  ],
+  "author": "Acciaccatura",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Acciaccatura/survey-site/issues"
+  },
+  "homepage": "https://github.com/Acciaccatura/survey-site#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "mongodb": "^2.2.16"
+  }
+}

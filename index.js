@@ -11,7 +11,7 @@ app.use(express.static(__dirname + '/src/'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.post('/',function(req, res, next){
+app.post('/create',function(req, res, next){
 	var mongo = mongodb.MongoClient;
 	var bod = req.body;
 	console.log(bod);
@@ -20,20 +20,26 @@ app.post('/',function(req, res, next){
 			console.log(err);
 		} else {
 			db.collection('survey').insert({
-				name: bod.info
+				options: bod.option,
+				title: bod.title
 			});
 		}
 	});
+	res.send('gotcha');
 });
 
-app.get('/lol', function(req, res, next) {
+app.get('/create', function(req, res, next) {
+	res.sendFile(__dirname + '/src/create.html');
+});
+
+app.use('/get',function(req, res, next){
 	var mongo = mongodb.MongoClient;
 	mongo.connect('mongodb://localhost:' + dbport, function(err, db){
 		if (err) {
 			console.log(err);
 		} else {
-			db.collection('survey').find().toArray(function(err, docs){
-				res.send(docs);
+			db.collection('survey').find().toArray(function(err, info){
+				res.send(info);
 			});
 		}
 	});

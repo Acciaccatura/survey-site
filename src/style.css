@@ -2,3 +2,33 @@ body {
 	background-color: white;
 	text-align: center;
 }
+
+h2 {
+	text-align: left;
+}
+
+.text-field {
+	text-align: left;
+	border-bottom: 1px solid #44ccff;
+}
+
+.text-field:focus {
+	outline: none;
+	border-bottom: 1px solid #aaeeff;
+}
+
+.option {
+	width: 80%;
+}
+
+#survey {
+	margin: 0 10% 0 10%;
+}
+
+#options {
+	display: none;
+}
+
+.title {
+	font-size: 24px;
+}

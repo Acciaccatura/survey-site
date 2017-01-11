@@ -1,0 +1,16 @@
+doctype html
+html
+head
+link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+link(rel="stylesheet" href="style.css")
+body
+	a(href="#", class="jayson") Standard LOLs
+	if msg
+		if msg === '1' 
+			p(class="message") Your survey has been submitted.
+	hr
+	div(class="survey")
+		div(class="title") #{document.title}
+		ul
+			for option in document.options
+				li #{option}

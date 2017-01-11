@@ -1,0 +1,17 @@
+doctype html
+html
+head
+link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+link(rel="stylesheet" href="style.css")
+script(src="https://code.jquery.com/jquery-3.1.1.min.js")
+script(src="thing.js")
+body
+header
+	a(class="" href="/") Standard LOLs
+	hr
+form(id="survey" method="post" action="/create")
+	h2 Title:
+	div(class="text-field title" name="title" contenteditable="true")
+	button(type="button" id="add-button") Add more choices...
+	button(type="button" id="enter") Create Survey
+footer

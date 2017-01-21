@@ -6,12 +6,14 @@ link(rel="stylesheet" href="style.css")
 script(src="https://code.jquery.com/jquery-3.1.1.min.js")
 script(src="thing.js")
 body
-header
-	a(class="" href="/") Standard LOLs
-	hr
-form(id="survey" method="post" action="/create")
-	h2 Title:
-	div(class="text-field title" name="title" contenteditable="true")
-	button(type="button" id="add-button") Add more choices...
-	button(type="button" id="enter") Create Survey
-footer
+	header
+		a(class="" href="/") Standard LOLs
+		hr
+	form(id="survey" method="post" action="/")
+		h1 Create a Survey
+		h2 Title:
+		div(class="text-field title" name="title" contenteditable="true")
+		button(type="button" id="add-button") Add more choices...
+		button(type="button" id="remove-button") Remove choices...
+		button(type="button" id="enter") Create Survey
+	footer

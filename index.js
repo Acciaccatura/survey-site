@@ -2,67 +2,120 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 
-var mongodb = require('./mongodb.js');
+var mongodb = require('mongodb');
 
+var mongo = mongodb.MongoClient;
+var mongoip = 'mongodb://localhost:27017';
 var port = process.env.PORT || 3000;
 var id = process.env.IP || '0.0.0.0';
+var data;
 
-app.use(express.static(__dirname + '/src/'));
 app.set('views', __dirname + '/src/');
 app.set('view engine', 'jade');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static(__dirname + '/src/'));
+//favicon
 
-app.use('/nigga', function(req, res) {
-	mongodb.getMongo('survey', function(err, col){
-	var find = col.find();
+app.get('/create', function(req, res) {
+	res.render('create');
+});
+
+app.post('/$', (req, res, next) => {
+	if (req.body.option) {
+		let col = data.collection('survey');
+		let doc = { title: req.body.title };
+		let options = req.body.option;
+		let opts = [];
+		for (let a = req.body.option.length - 1; a >= 0; a--)
+			opts[a] = { qid: a, option: options[a], score: 0 };
+		doc.options = opts;
+		doc.total = 0;
+		console.log(doc);
+		col.insert(doc, function(err){
+			if (err)
+				req.msg = 2;
+			else {
+				req.msg = 1;
+			}
+			next();
+		});
+	}
+});
+
+app.use('/$', (req, res) => {
+	let col = data.collection('survey');
+	let find = col.find();
 	find.count(function(err, count) {
-		var random = Math.floor(Math.random()*count);
+		let random = Math.floor(Math.random()*count);
+		console.log(count + ' ' + random);
 		col.find().limit(-1).skip(random).next(function(err, doc){
-			console.log(req.query);
-			res.render('index', { document: doc, msg: req.query.msg });
-			});
+			if (err) {
+				res.send('error');
+			} else {
+				let returnthis = { document: doc, msg: req.msg };
+				console.log(returnthis);
+				for (let a = 0; a < doc.options.length; a++) {
+					console.log(doc.options[a]);
+				}
+				res.render('index', returnthis);
+			}
 		});
 	});
 });
 
-app.post('/create',function(req, res, next){
-	var mongo = mongodb.MongoClient;
-	var bod = req.body;
-	mongodb.getMongo('survey', function(err, col){
-		col.insert({
-			title: bod.title,
-			options: bod.option
-		}, function (err){
-			if (err) {}
-			else {
-				res.redirect(301, '/nigga?msg=1');
+app.post('/survey/:id', function(req, res, next) {
+	console.log(req.body);
+	if (req.body.choice) {
+		let parsed = parseInt(req.body.choice);
+		console.log(parsed);
+		if (!isNaN(parsed)) {
+			let get = 'options.' + parsed + '.score';
+			let col = data.collection('survey');
+			console.log(req.params.id + ' ' + get);
+			col.update({ '_id': new mongodb.ObjectID(req.params.id), 'options.qid': parsed },
+				{ '$inc': { 'options.$.score': 1, 'total': 1 } },
+				function(err, result) {
+					if (!err) {
+						console.log('success?');
+					} else {
+						console.log(err);
+						res.send('error!');
+					}
+					next();
+				}
+			);
+		}
+	}
+});
+
+app.use('/survey/:id', function(req, res){
+	console.log(req.params);
+	let col = data.collection('survey');
+	let q = new mongodb.ObjectID(req.params.id);
+	let doc = col.find({ '_id': q }).next(function(err, doc){
+		if (doc) {
+			let retthis = { document: doc };
+			let total = 0;
+			for (let a = 0; a < retthis.document.options.length; a++) {
+				retthis.document.options[a].size = Math.round(10000*(retthis.document.options[a].score/retthis.document.total))/100;
 			}
-		})
-	});
-});
-
-app.get('/create', function(req, res, next) {
-	res.render('create');
-});
-
-app.use('/get',function(req, res, next){
-	var mongo = mongodb.MongoClient;
-	mongo.connect(mongoip, function(err, db){
-		if (err) {
-			console.log(err);
+			console.log(retthis);
+			res.render('get', retthis);
 		} else {
-			db.collection('survey').find().toArray(function(err, info){
-				res.render('index.html', { wow: 'wtf is going on' }, function(err, html){
-					res.send(html);
-				});
-			});
+			res.redirect('/');
 		}
 	});
 });
 
-app.listen(port, id, function(){
-	console.log('dude connected');
+
+mongo.connect(mongoip, function (err, db) {
+	if (db) {
+		data = db;
+		app.listen(port, id, function(){
+			console.log('Connected on ' + id + ":" + port);
+		});
+	}
 });
 /*
 mongodb.connect(id + ':' + dbport, (err, db) => {

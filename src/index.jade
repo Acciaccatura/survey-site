@@ -3,14 +3,18 @@ html
 head
 link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
 link(rel="stylesheet" href="style.css")
+script(src="https://code.jquery.com/jquery-3.1.1.min.js")
+script(src="survey_be.js")
 body
-	a(href="#", class="jayson") Standard LOLs
-	if msg
-		if msg === '1' 
-			p(class="message") Your survey has been submitted.
+	a(href="/", class="jayson") Standard LOLs
+	if msg === 1
+		p(class="message") Your survey has been submitted.
 	hr
-	div(class="survey")
+	br
+	div
+		a(href="create") Create Survey
+	form(class="survey", method="POST", action="/survey/#{document._id}", id="survey")
 		div(class="title") #{document.title}
-		ul
+		ul(id="options")
 			for option in document.options
-				li #{option}
+				li(style="cursor: pointer") #{option.option}

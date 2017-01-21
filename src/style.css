@@ -10,6 +10,8 @@ h2 {
 .text-field {
 	text-align: left;
 	border-bottom: 1px solid #44ccff;
+	min-height: 20px;
+	margin-top: 8px;
 }
 
 .text-field:focus {
@@ -26,7 +28,17 @@ h2 {
 }
 
 #options {
-	display: none;
+	list-style: none;
+	padding: 0px;
+}
+
+#options li {
+	display: block;
+	margin-top: 8px;
+	overflow: visible; 
+	white-space: nowrap; 
+	padding-left: 8px;
+	background-color: #eee;
 }
 
 .title {

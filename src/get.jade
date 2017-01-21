@@ -1,0 +1,17 @@
+doctype html
+html
+head
+link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+link(rel="stylesheet" href="../style.css")
+body
+	a(href="/", class="jayson") Standard LOLs
+	hr
+	br
+	div
+		a(href="create") Create Survey
+	div(id="survey")
+		h1 Survey Results
+		div(class="title") #{document.title}
+		ul(id="options" style="text-align: left")
+			for option in document.options
+				li(style="width: #{option.size}%; background-color: #aaddff;") #{option.option}: #{option.size}%

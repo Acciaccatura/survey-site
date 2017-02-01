@@ -9,9 +9,3 @@ body
 	br
 	div
 		a(href="create") Create Survey
-	div(id="survey")
-		h1 Survey Results
-		div(class="title") #{document.title}
-		ul(id="options" style="text-align: left")
-			for option in document.options
-				li(style="width: #{option.size}%; background-color: #aaddff;") #{option.option}: #{option.size}%

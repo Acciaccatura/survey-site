@@ -7,14 +7,26 @@ script(src="https://code.jquery.com/jquery-3.1.1.min.js")
 script(src="survey_be.js")
 body
 	a(href="/", class="jayson") Standard LOLs
-	if msg === 1
+	if msg === 2
 		p(class="message") Your survey has been submitted.
+	else if msg === 3
+		p(class="message") Your response has been submitted.
 	hr
 	br
 	div
 		a(href="create") Create Survey
-	form(class="survey", method="POST", action="/survey/#{document._id}", id="survey")
-		div(class="title") #{document.title}
-		ul(id="options")
-			for option in document.options
-				li(style="cursor: pointer") #{option.option}
+	if prev
+		div(id="prevSurvey")
+			h1 Survey Results
+			div(class="title") #{prev.title}
+			ul(id="results" style="text-align: left")
+				for option in prev.options
+					li(style="width: #{option.size}%; background-color: #aaddff;") #{option.option}: #{option.size}%
+			button(id="okay") Okay
+	div
+		form(class="survey", id="survey", method="POST", action="/", style="display: #{prevExists}")
+			input(type="hidden" value="#{document._id}" name="id")
+			div(class="title") #{document.title}
+			ul(id="options")
+				for option in document.options
+					li(style="cursor: pointer") #{option.option}

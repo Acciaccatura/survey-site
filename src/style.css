@@ -23,16 +23,19 @@ h2 {
 	width: 80%;
 }
 
-#survey {
-	margin: 0 10% 0 10%;
+#survey, #prevSurvey {
+	min-width: 50%;
+	margin: 0px;
+	display: inline-block;
 }
 
-#options {
+#options, #results {
 	list-style: none;
+	margin: 0px;
 	padding: 0px;
 }
 
-#options li {
+#options li, #results li {
 	display: block;
 	margin-top: 8px;
 	overflow: visible; 
@@ -43,6 +46,10 @@ h2 {
 
 .title {
 	font-size: 24px;
+}
+
+.tag {
+	font-size: 16px;
 }
 
 .message {

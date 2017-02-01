@@ -11,4 +11,11 @@ $('document').ready(function() {
 		$('#survey').append(elem);
 		document.getElementById('survey').submit();
 	});
+	$('.message').animate({ opacity: 0 }, "slow", () => {
+		$('.message').remove();
+	});
+	$('#okay').click(function(){
+		$('#survey').attr('style', 'display: default');
+		$('#prevSurvey').remove();
+	});
 });

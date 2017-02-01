@@ -1,6 +1,6 @@
 $('document').ready(function(){
 	$('#add-button').click(function() {
-		$('<div class="text-field option" name="option" contenteditable="true"></div>').insertBefore('#add-button');
+		$('<div class="text-field option" name="option" contenteditable="true"></div>').insertAfter('.title');
 	});
 	removeButton();
 	$('#enter').click(function() {

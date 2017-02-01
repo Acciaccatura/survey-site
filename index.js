@@ -21,11 +21,11 @@ app.get('/create', function(req, res) {
 	res.render('create');
 });
 
-app.post('/$', (req, res, next) => {
+app.post('/$', function(req, res, next) {
 	if (req.body.option) {
 		let col = data.collection('survey');
 		let doc = { title: req.body.title };
-		let options = req.body.option;
+		let options = req.body.option; 
 		let opts = [];
 		for (let a = req.body.option.length - 1; a >= 0; a--)
 			opts[a] = { qid: a, option: options[a], score: 0 };
@@ -33,17 +33,56 @@ app.post('/$', (req, res, next) => {
 		doc.total = 0;
 		console.log(doc);
 		col.insert(doc, function(err){
-			if (err)
+			if (!err)
 				req.msg = 2;
 			else {
 				req.msg = 1;
 			}
 			next();
 		});
-	}
+	} else next();
 });
 
-app.use('/$', (req, res) => {
+app.post('/$', function(req, res, next) {
+	if (req.body.choice) {
+		let parsed = parseInt(req.body.choice);
+		console.log(parsed);
+		if (!isNaN(parsed)) {
+			let get = 'options.' + parsed + '.score';
+			let col = data.collection('survey');
+			console.log(req.body.id + ' ' + get);
+			col.update({ '_id': new mongodb.ObjectID(req.body.id), 'options.qid': parsed },
+				{ '$inc': { 'options.$.score': 1, 'total': 1 } },
+				function(err, result) {
+					if (!err) {
+						req.msg = 3;
+						prev = req.body.id;
+					} else {
+						console.log(err);
+						req.msg = 1;
+					}
+					next();
+				}
+			);
+		}
+	} else next();
+});
+
+app.use('/$', function(req, res, next){
+	let col = data.collection('survey');
+	let q = new mongodb.ObjectID(req.body.id);
+	let doc = col.find({ '_id': q }).next(function(err, doc){
+		if (doc) {
+			let retthis = { document: doc };
+			let total = 0;
+			for (let a = 0; a < retthis.document.options.length; a++) {
+				retthis.document.options[a].size = Math.round(10000*(retthis.document.options[a].score/retthis.document.total))/100;
+			}
+			res.prevDoc = doc;
+		}
+		next();
+	});
+}, (req, res) => {
 	let col = data.collection('survey');
 	let find = col.find();
 	find.count(function(err, count) {
@@ -54,60 +93,20 @@ app.use('/$', (req, res) => {
 				res.send('error');
 			} else {
 				let returnthis = { document: doc, msg: req.msg };
-				console.log(returnthis);
 				for (let a = 0; a < doc.options.length; a++) {
 					console.log(doc.options[a]);
 				}
+				returnthis.prev = res.prevDoc;
+				if (res.prevDoc)
+					returnthis.prevExists = "none";
+				else
+					returnthis.prevExists = "default";
+				console.log(returnthis);
 				res.render('index', returnthis);
 			}
 		});
 	});
 });
-
-app.post('/survey/:id', function(req, res, next) {
-	console.log(req.body);
-	if (req.body.choice) {
-		let parsed = parseInt(req.body.choice);
-		console.log(parsed);
-		if (!isNaN(parsed)) {
-			let get = 'options.' + parsed + '.score';
-			let col = data.collection('survey');
-			console.log(req.params.id + ' ' + get);
-			col.update({ '_id': new mongodb.ObjectID(req.params.id), 'options.qid': parsed },
-				{ '$inc': { 'options.$.score': 1, 'total': 1 } },
-				function(err, result) {
-					if (!err) {
-						console.log('success?');
-					} else {
-						console.log(err);
-						res.send('error!');
-					}
-					next();
-				}
-			);
-		}
-	}
-});
-
-app.use('/survey/:id', function(req, res){
-	console.log(req.params);
-	let col = data.collection('survey');
-	let q = new mongodb.ObjectID(req.params.id);
-	let doc = col.find({ '_id': q }).next(function(err, doc){
-		if (doc) {
-			let retthis = { document: doc };
-			let total = 0;
-			for (let a = 0; a < retthis.document.options.length; a++) {
-				retthis.document.options[a].size = Math.round(10000*(retthis.document.options[a].score/retthis.document.total))/100;
-			}
-			console.log(retthis);
-			res.render('get', retthis);
-		} else {
-			res.redirect('/');
-		}
-	});
-});
-
 
 mongo.connect(mongoip, function (err, db) {
 	if (db) {
@@ -117,8 +116,3 @@ mongo.connect(mongoip, function (err, db) {
 		});
 	}
 });
-/*
-mongodb.connect(id + ':' + dbport, (err, db) => {
-	
-});
-*/
